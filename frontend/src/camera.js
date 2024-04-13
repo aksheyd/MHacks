@@ -40,7 +40,7 @@ const CameraInterface = () => {
 
   const startRecording = () => {
     recordedChunks.current = [];
-    mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'video/mp4;codecs=H.264' });
+    mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
   
     mediaRecorder.current.ondataavailable = event => {
       if (event.data.size > 0) {
@@ -49,12 +49,12 @@ const CameraInterface = () => {
     };
   
     mediaRecorder.current.onstop = () => {
-      const blob = new Blob(recordedChunks.current, { type: 'video/mp4' });
+      const blob = new Blob(recordedChunks.current, { type: 'video/webm' });
       const formData = new FormData();
-      formData.append('video', blob, 'recorded-video.mp4');
+      formData.append('video', blob, 'recorded-video.webm');
   
       // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
-      axios.post('localhost:8000/video', formData)
+      axios.post('http://127.0.0.1:5000/video', formData)
         .then(response => {
           console.log('Video uploaded successfully:', response);
         })
@@ -66,7 +66,7 @@ const CameraInterface = () => {
     mediaRecorder.current.start();
     setRecording(true);
   };
-
+  
   const stopRecording = () => {
     if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
       mediaRecorder.current.stop();

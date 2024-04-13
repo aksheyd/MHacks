@@ -1,9 +1,28 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from PIL import Image
 import google.generativeai as genai
 import cv2
 import os
 import shutil
+from flask_cors import CORS
+
+from moviepy.editor import VideoFileClip
+
+def convert_webm_to_mp4(input_file, output_file):
+    print("Converting...")
+    try:
+        # Load the WebM video clip
+        video_clip = VideoFileClip(input_file)
+        
+        # Set the output format to MP4
+        output_format = 'mp4'
+        
+        # Write the video clip to the output file in MP4 format
+        video_clip.write_videofile(output_file, codec='libx264', fps=24)  # Adjust codec and fps as needed
+        print("Conversion completed successfully.")
+    except Exception as e:
+        print(f"Error during conversion: {e}")
+
+
 
 def get_api_key(file_path="api_key.txt"):
     with open(file_path, 'r') as f:
@@ -13,9 +32,12 @@ def get_api_key(file_path="api_key.txt"):
 model = None
 app = None
 
+
+
 def create_app():
     global app
     app = Flask(__name__, static_folder='static')
+    CORS(app)  # Enable CORS for all routes
 
     global model
     GOOGLE_API_KEY = get_api_key()
@@ -32,13 +54,17 @@ def create_app():
         if file.filename == '':
             return 'No selected file'
         
-        file.save('static/video.mp4')
+        file.save('static/video.webm')
 
         return 'Video uploaded successfully'
     
     @app.route('/generate', methods=['GET'])
     def generate():
         video_file_name = "static/video.mp4"
+
+        input_file = 'static/video.webm'
+        print(66)
+        convert_webm_to_mp4(input_file, video_file_name)
         # Create or cleanup existing extracted image frames directory.
         FRAME_EXTRACTION_DIRECTORY = "content/frames"
         FRAME_PREFIX = "_frame"
@@ -54,7 +80,7 @@ def create_app():
             create_frame_output_dir(FRAME_EXTRACTION_DIRECTORY)
             vidcap = cv2.VideoCapture(video_file_path)
             fps = vidcap.get(cv2.CAP_PROP_FPS)
-            frame_duration = 1 / fps  # Time interval between frames (in seconds)
+            # frame_duration = 1 / fps  # Time interval between frames (in seconds)
             output_file_prefix = os.path.basename(video_file_path).replace('.', '_')
             frame_count = 0
             count = 0
