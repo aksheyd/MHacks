@@ -1,0 +1,9 @@
+canvas {
+    border: 1px solid #230;
+    cursor: crosshair;
+}
+
+button {
+    display: block;
+    margin-top: 10px;
+}
