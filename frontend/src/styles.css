@@ -1,0 +1,119 @@
+/* ResponseInterface.css */
+
+
+
+.first-color { 
+	background: #defcf9; 
+}
+	
+.second-color { 
+	background: #cadefc; 
+}
+
+.third-color { 
+	background: #c3bef0; 
+}
+
+.fourth-color { 
+	background: #cca8e9; 
+}
+
+
+h2 {
+    color: #cca8e9
+}
+
+p {
+   color: #c3bef0
+}
+
+button {
+    margin-right: 20px;
+    padding: 20px;
+    background-color: #ffffff; /* White background */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    color: #cca8e9;
+    border-color: white;
+}
+
+/* body {
+    font-family: "Cerebri Sans", Helvetica, Arial, sans-serif;
+} */
+
+.container {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+  }
+  
+.left-pane,
+.right-pane {
+flex: 1;
+display: flex;
+justify-content: center;
+}
+
+.vertical-line {
+width: 2px;
+background-color: #000000; /* Adjust the color of the vertical line */
+}
+
+
+
+/* Container styles */
+.app-container {
+    background-color: #f5f1fe; /* Light grey background for the entire application */
+    /* font-family: "Cerebri Sans", Helvetica, Arial, sans-serif; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* CameraInterface styles */
+  .camera-interface-container {
+    margin-right: 20px;
+    padding: 20px;
+    background-color: #ffffff; /* White background */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+  }
+  
+  /* ResponseInterface styles */
+  .response-interface-container {
+    padding: 20px;
+    background-color: #ffffff; /* Google's primary color */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+  }
+  
+  /* Typography styles */
+  .response-interface-container h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+  
+  .response-interface-container p {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  /* Loading spinner styles */
+  .response-interface-container .loader {
+    border: 4px solid #f3f3f3; /* Light grey border */
+    border-top: 4px solid #3498db; /* Blue border */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite; /* Spin animation */
+    margin: 0 auto; /* Center the loader */
+  }
+  
+  /* Keyframes for the spin animation */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  

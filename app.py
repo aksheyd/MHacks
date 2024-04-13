@@ -10,6 +10,7 @@ import threading
 def get_api_key(file_path="api_key.txt"):
     with open(file_path, 'r') as f:
         api_key = f.read().strip()
+        print(api_key)
     return api_key
 
 model = None

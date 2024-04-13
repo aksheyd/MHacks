@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-import axios from 'axios'; // Import Axios for making HTTP requests
-import './camera.css'; // Import CSS file for styling
+import axios from 'axios';
+import ResponseInterface from './response'; // Assuming you have ResponseInterface component in a separate file
 
 const CameraInterface = () => {
   const [stream, setStream] = useState(null);
@@ -57,6 +56,15 @@ const CameraInterface = () => {
       axios.post('http://127.0.0.1:5000/video', formData)
         .then(response => {
           console.log('Video uploaded successfully:', response);
+          // Make another API call to populate the response data
+          axios.get('http://127.0.0.1:5000/generate', { withCredentials: true })
+            .then(response => {
+              console.log('Response data:', response.data);
+              // Handle response data as needed
+            })
+            .catch(error => {
+              console.error('Error fetching response data:', error);
+            });
         })
         .catch(error => {
           console.error('Error uploading video:', error);
@@ -76,7 +84,7 @@ const CameraInterface = () => {
 
   return (
     <div>
-      <h2>ASL Translation</h2>
+      <h2>Input Video</h2>
       {error && <p>{error}</p>}
       {stream && (
         <div>
@@ -90,6 +98,7 @@ const CameraInterface = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
