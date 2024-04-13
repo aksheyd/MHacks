@@ -4,25 +4,8 @@ import cv2
 import os
 import shutil
 from flask_cors import CORS
-
-from moviepy.editor import VideoFileClip
-
-def convert_webm_to_mp4(input_file, output_file):
-    print("Converting...")
-    try:
-        # Load the WebM video clip
-        video_clip = VideoFileClip(input_file)
-        
-        # Set the output format to MP4
-        output_format = 'mp4'
-        
-        # Write the video clip to the output file in MP4 format
-        video_clip.write_videofile(output_file, codec='libx264', fps=24)  # Adjust codec and fps as needed
-        print("Conversion completed successfully.")
-    except Exception as e:
-        print(f"Error during conversion: {e}")
-
-
+import ffmpeg
+import threading
 
 def get_api_key(file_path="api_key.txt"):
     with open(file_path, 'r') as f:
@@ -31,8 +14,6 @@ def get_api_key(file_path="api_key.txt"):
 
 model = None
 app = None
-
-
 
 def create_app():
     global app
@@ -43,6 +24,20 @@ def create_app():
     GOOGLE_API_KEY = get_api_key()
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest")
+
+    def convert_webm_to_mp4(input_file, output_file):
+        print("Converting...")
+        try:
+            # Input file stream
+            input_stream = ffmpeg.input(input_file)
+            
+            # Output file stream
+            output_stream = ffmpeg.output(input_stream, output_file)
+            
+            # Run ffmpeg command
+            ffmpeg.run(output_stream, overwrite_output=True)
+        except Exception as e:
+            print(f"Error during conversion: {e}")
 
     @app.route('/video', methods=['POST'])
     def upload_video():
@@ -60,10 +55,8 @@ def create_app():
     
     @app.route('/generate', methods=['GET'])
     def generate():
-        video_file_name = "static/video.mp4"
-
         input_file = 'static/video.webm'
-        print(66)
+        video_file_name = 'static/video.mp4'
         convert_webm_to_mp4(input_file, video_file_name)
         # Create or cleanup existing extracted image frames directory.
         FRAME_EXTRACTION_DIRECTORY = "content/frames"
@@ -76,7 +69,7 @@ def create_app():
                 os.makedirs(output_dir)
 
         def extract_frame_from_video(video_file_path):
-            print(f"Extracting {video_file_path} at 1 frame per second. This might take a bit...")
+            print(f"Extracting {video_file_path} at 2 frame per second. This might take a bit...")
             create_frame_output_dir(FRAME_EXTRACTION_DIRECTORY)
             vidcap = cv2.VideoCapture(video_file_path)
             fps = vidcap.get(cv2.CAP_PROP_FPS)
@@ -88,7 +81,7 @@ def create_app():
                 success, frame = vidcap.read()
                 if not success: # End of video
                     break
-                if int(count / fps) == frame_count: # Extract a frame every second
+                if int(fps - (count%int(fps))) == int(fps) or int(fps - (count%int(fps))) == int(fps / 2): # Extract a frame every second
                     min = frame_count // 60
                     sec = frame_count % 60
                     time_string = f"{min:02d}:{sec:02d}"
@@ -138,18 +131,15 @@ def create_app():
         print(f'Uploading {len(files_to_upload) if full_video else 10} files. This might take a bit...')
 
         for file in files_to_upload if full_video else files_to_upload[40:50]:
-            print(f'Uploading: {file.file_path}...')
+            # yield f"data: 1\n"
             response = genai.upload_file(path=file.file_path)
             file.set_file_response(response)
             uploaded_files.append(file)
 
         print(f"Completed file uploads!\n\nUploaded: {len(uploaded_files)} files")
-        # List files uploaded in the API
-        for n, f in zip(range(len(uploaded_files)), genai.list_files()):
-            print(f.uri)
 
         # Create the prompt.
-        prompt = "These image slices are from a video of someone signing. What are they signing?"
+        prompt = "For each frame provided, describe the hand shape, position, movement, and any other relevant details you observe in the image. Then analyze in a sign language context."
 
         # Set the model to Gemini 1.5 Pro.
         model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest")
@@ -168,13 +158,17 @@ def create_app():
                                         request_options={"timeout": 600})
         print(response.text)
 
-        print(f'Deleting {len(uploaded_files)} images. This might take a bit...')
-        for file in uploaded_files:
-            genai.delete_file(file.response.name)
-            print(f'Deleted {file.file_path} at URI {file.response.uri}')
-        print(f"Completed deleting files!\n\nDeleted: {len(uploaded_files)} files")
+        def delete_files(uploaded_files, files_to_upload):
+            for file in uploaded_files:
+                genai.delete_file(file.response.name)
+            for file in files_to_upload:
+                os.remove(file.file_path)
 
-        return 'Generated successfully'
+        delThread = threading.Thread(target=delete_files, args=(uploaded_files,files_to_upload,))
+        print(f'Deleting {len(uploaded_files)} images. Thread launched.')
+        delThread.start()
+
+        return jsonify({'message': response.text})
 
 if __name__ == '__main__':
     create_app()
