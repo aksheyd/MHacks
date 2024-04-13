@@ -136,13 +136,10 @@ def create_app():
             file.set_file_response(response)
             uploaded_files.append(file)
 
-        print(f"Completed file uploads!\n\nUploaded: {len(uploaded_files)} files")
+        print(f"Uploaded: {len(uploaded_files)} files")
 
         # Create the prompt.
         prompt = "For each frame provided, describe the hand shape, position, movement, and any other relevant details you observe in the image. Then analyze in a sign language context."
-
-        # Set the model to Gemini 1.5 Pro.
-        model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest")
 
         # Make GenerateContent request with the structure described above.
         def make_request(prompt, files):
