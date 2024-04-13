@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+import axios from 'axios'; // Import Axios for making HTTP requests
+import './camera.css'; // Import CSS file for styling
+
 const CameraInterface = () => {
   const [stream, setStream] = useState(null);
   const [error, setError] = useState(null);
@@ -37,24 +40,29 @@ const CameraInterface = () => {
 
   const startRecording = () => {
     recordedChunks.current = [];
-    mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
-
+    mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'video/mp4;codecs=H.264' });
+  
     mediaRecorder.current.ondataavailable = event => {
       if (event.data.size > 0) {
         recordedChunks.current.push(event.data);
       }
     };
-
+  
     mediaRecorder.current.onstop = () => {
-      const blob = new Blob(recordedChunks.current, { type: 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'recorded-video.webm';
-      a.click();
-      URL.revokeObjectURL(url);
+      const blob = new Blob(recordedChunks.current, { type: 'video/mp4' });
+      const formData = new FormData();
+      formData.append('video', blob, 'recorded-video.mp4');
+  
+      // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
+      axios.post('localhost:8000/video', formData)
+        .then(response => {
+          console.log('Video uploaded successfully:', response);
+        })
+        .catch(error => {
+          console.error('Error uploading video:', error);
+        });
     };
-
+  
     mediaRecorder.current.start();
     setRecording(true);
   };
@@ -68,10 +76,10 @@ const CameraInterface = () => {
 
   return (
     <div>
+      <h2>ASL Translation</h2>
       {error && <p>{error}</p>}
       {stream && (
         <div>
-          <p>Camera is enabled:</p>
           <video ref={videoRef} autoPlay playsInline muted />
           <div>
             {recording ? (
