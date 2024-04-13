@@ -4,6 +4,7 @@ import axios from 'axios';
 import './response.css'; // Import CSS file for styling
 
 const ResponseInterface = (props) => {
+    console.log(props);
     const [responseData, setResponseData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -32,13 +33,11 @@ const ResponseInterface = (props) => {
             <h2>Response Interface</h2>
             {props.generationInProgress ? (
                 <div className="loader"></div> // Display loading spinner
-            ) : props.generationInProgress ? (
+            ) : (
                 <div>
                     <p>Response from the backend API:</p>
                     <pre>{JSON.stringify(props.generationData, null, 2)}</pre>
                 </div>
-            ) : (
-                <p>No data received from the backend API</p>
             )}
         </div>
     );

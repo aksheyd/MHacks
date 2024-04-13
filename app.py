@@ -10,7 +10,6 @@ import threading
 def get_api_key(file_path="api_key.txt"):
     with open(file_path, 'r') as f:
         api_key = f.read().strip()
-        print(api_key)
     return api_key
 
 model = None
@@ -29,13 +28,8 @@ def create_app():
     def convert_webm_to_mp4(input_file, output_file):
         print("Converting...")
         try:
-            # Input file stream
             input_stream = ffmpeg.input(input_file)
-            
-            # Output file stream
             output_stream = ffmpeg.output(input_stream, output_file)
-            
-            # Run ffmpeg command
             ffmpeg.run(output_stream, overwrite_output=True)
         except Exception as e:
             print(f"Error during conversion: {e}")
@@ -140,7 +134,7 @@ def create_app():
         print(f"Uploaded: {len(uploaded_files)} files")
 
         # Create the prompt.
-        prompt = "For each frame provided, describe the hand shape, position, movement, and any other relevant details you observe in the image. Then analyze in a sign language context."
+        prompt = "For each frame provided, describe the hand shape, position, movement, and any other relevant details you observe in the image. Then analyze in a sign language context and try to convert the frames into words. It should be a simple phrase."
 
         # Make GenerateContent request with the structure described above.
         def make_request(prompt, files):
