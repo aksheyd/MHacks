@@ -6,6 +6,8 @@ const CameraInterface = () => {
   const [stream, setStream] = useState(null);
   const [error, setError] = useState(null);
   const [recording, setRecording] = useState(false);
+  const [generationInProgress, setGenerationInProgress] = useState(false);
+  const [generationData, setGenerationData] = useState("");
   const videoRef = useRef();
   const mediaRecorder = useRef(null);
   const recordedChunks = useRef([]);
@@ -37,44 +39,48 @@ const CameraInterface = () => {
     }
   }, [stream]);
 
+  const generate = () => {
+    setGenerationInProgress(true);
+    axios.get('http://127.0.0.1:5000/generate')
+      .then(response => {
+        console.log(response.data);
+        setGenerationInProgress(false);
+        setGenerationData(response.data);
+      })
+      .catch(error => {
+        console.error('Error generating data:', error);
+        setGenerationInProgress(false);
+      });
+  }
+
   const startRecording = () => {
     recordedChunks.current = [];
     mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
-  
+
     mediaRecorder.current.ondataavailable = event => {
       if (event.data.size > 0) {
         recordedChunks.current.push(event.data);
       }
     };
-  
+
     mediaRecorder.current.onstop = () => {
       const blob = new Blob(recordedChunks.current, { type: 'video/webm' });
       const formData = new FormData();
       formData.append('video', blob, 'recorded-video.webm');
-  
-      // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
+
       axios.post('http://127.0.0.1:5000/video', formData)
         .then(response => {
           console.log('Video uploaded successfully:', response);
-          // Make another API call to populate the response data
-          axios.get('http://127.0.0.1:5000/generate', { withCredentials: true })
-            .then(response => {
-              console.log('Response data:', response.data);
-              // Handle response data as needed
-            })
-            .catch(error => {
-              console.error('Error fetching response data:', error);
-            });
         })
         .catch(error => {
           console.error('Error uploading video:', error);
         });
     };
-  
+
     mediaRecorder.current.start();
     setRecording(true);
   };
-  
+
   const stopRecording = () => {
     if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
       mediaRecorder.current.stop();
@@ -96,9 +102,13 @@ const CameraInterface = () => {
               <button onClick={startRecording}>Start Recording</button>
             )}
           </div>
+
+          <div>
+            <button onClick={generate} disabled={generationInProgress}>Generate</button>
+          </div>
         </div>
       )}
-
+      <ResponseInterface generationInProgress={generationInProgress} generationData={generationData} />
     </div>
   );
 };
