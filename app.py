@@ -23,7 +23,8 @@ def create_app():
     global model
     GOOGLE_API_KEY = get_api_key()
     genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest")
+    model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest",
+                                  system_instruction="You are going to be translating ASL (American Sign Language) from images that are sliced from video. The images are sliced at 2 frames per second and should convey a basic phrase in ASL.")
 
     def convert_webm_to_mp4(input_file, output_file):
         print("Converting...")
@@ -134,7 +135,7 @@ def create_app():
         print(f"Uploaded: {len(uploaded_files)} files")
 
         # Create the prompt.
-        prompt = "For each frame provided, describe the hand shape, position, movement, and any other relevant details you observe in the image. Then analyze in a sign language context and try to convert the frames into words. It should be a simple phrase."
+        prompt = "For every frame provided, describe the hand shape, position, movement, and any other relevant details you observe in the image. Then analyze in a sign language context and try to convert the frames into words. It should be a very simple phrase."
 
         # Make GenerateContent request with the structure described above.
         def make_request(prompt, files):
