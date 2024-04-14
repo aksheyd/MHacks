@@ -35,8 +35,8 @@ const ResponseInterface = (props) => {
                 <div className="loader"></div> // Display loading spinner
             ) : (
                 <div>
-                    <p>Response from the backend API:</p>
-                    <pre>{JSON.stringify(props.generationData, null, 2)}</pre>
+                    {/* <p>Response from the backend API:</p> */}
+                    <p>{props.generationData.message}</p>
                 </div>
             )}
         </div>

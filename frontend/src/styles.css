@@ -23,12 +23,16 @@ h2 {
     color: #cca8e9
 }
 
+h1 {
+  color: #cca8e9
+}
+
 p {
    color: #c3bef0
 }
 
 button {
-    margin-right: 20px;
+    /* margin-right: 20px; */
     padding: 20px;
     background-color: #ffffff; /* White background */
     border-radius: 8px;
@@ -42,10 +46,62 @@ button {
 } */
 
 .container {
-    display: flex;
-    align-items: center;
-    height: 100vh;
-  }
+  display: flex;
+  /* align-items: center; */
+
+  height: 100vh; /* Make the container take the full height of the viewport */
+}
+
+.video-container,
+.response-container {
+  flex: 1; /* Each container will take up half of the available space */
+  display: flex;
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  background-color: #f5f1fe; /* Just to visualize the container */
+}
+
+.main-container {
+  padding-top: 20px;
+  text-align: center;
+  background-color: #f5f1fe; /* Just to visualize the container */
+
+}
+
+.title-container {
+  width: 80%; /* Adjust as needed */
+  max-height: 100px; /* Adjust the maximum height as needed */
+  margin: 0 auto; /* Center the container */
+  overflow: hidden; /* Hide any overflow content */
+}
+
+.title {
+  font-size: 24px; /* Adjust the font size as needed */
+  margin-bottom: 20px; /* Adjust the margin as needed */
+}
+
+.video-container {
+  flex: 1;
+  padding-right: 10px; /* Adjust as needed */
+}
+
+.response-container {
+  flex: 1;
+}
+
+.button-container {
+  display: flex;
+}
+
+.generate-button {
+  margin-left: auto;
+}
+
+
+.button-right {
+  padding-left: 10px;
+
+}
   
 .left-pane,
 .right-pane {
@@ -82,6 +138,8 @@ background-color: #000000; /* Adjust the color of the vertical line */
   
   /* ResponseInterface styles */
   .response-interface-container {
+    width: 90%;
+    height: 50%;
     padding: 20px;
     background-color: #ffffff; /* Google's primary color */
     border-radius: 8px;

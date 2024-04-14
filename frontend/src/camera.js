@@ -89,27 +89,35 @@ const CameraInterface = () => {
   };
 
   return (
-    <div>
-      <h2>Input Video</h2>
+    <div class="main-container">
+  <h1>ASL Translation</h1>
+  <div class="container">
+    <div class="video-container">
+      {/* <h2>Input Video</h2> */}
       {error && <p>{error}</p>}
       {stream && (
         <div>
           <video ref={videoRef} autoPlay playsInline muted />
-          <div>
+          <div class="button-container">
             {recording ? (
               <button onClick={stopRecording}>Stop Recording</button>
             ) : (
               <button onClick={startRecording}>Start Recording</button>
             )}
-          </div>
-
-          <div>
-            <button onClick={generate} disabled={generationInProgress}>Generate</button>
+            <button onClick={generate} disabled={generationInProgress} class="generate-button">Generate</button>
           </div>
         </div>
       )}
+    </div>
+    <div class="response-container">
       <ResponseInterface generationInProgress={generationInProgress} generationData={generationData} />
     </div>
+  </div>
+</div>
+
+
+  
+
   );
 };
 
