@@ -157,9 +157,9 @@ def create_app():
             for file in files_to_upload:
                 os.remove(file.file_path)
 
-        delThread = threading.Thread(target=delete_files, args=(uploaded_files,files_to_upload,))
-        print(f'Deleting {len(uploaded_files)} images. Thread launched.')
-        delThread.start()
+        # delThread = threading.Thread(target=delete_files, args=(uploaded_files,files_to_upload,))
+        # print(f'Deleting {len(uploaded_files)} images. Thread launched.')
+        # delThread.start()
 
         return jsonify({'message': response.text})
 

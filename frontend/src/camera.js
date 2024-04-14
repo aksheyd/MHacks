@@ -8,6 +8,7 @@ const CameraInterface = () => {
   const [recording, setRecording] = useState(false);
   const [generationInProgress, setGenerationInProgress] = useState(false);
   const [generationData, setGenerationData] = useState("");
+  const [uploadSuccess, setUploadSuccess] = useState(false); // State for upload success message
   const videoRef = useRef();
   const mediaRecorder = useRef(null);
   const recordedChunks = useRef([]);
@@ -71,6 +72,7 @@ const CameraInterface = () => {
       axios.post('http://127.0.0.1:5000/video', formData)
         .then(response => {
           console.log('Video uploaded successfully:', response);
+          setUploadSuccess(true); // Set upload success message
         })
         .catch(error => {
           console.error('Error uploading video:', error);
@@ -90,34 +92,31 @@ const CameraInterface = () => {
 
   return (
     <div class="main-container">
-  <h1>ASL Translation</h1>
-  <div class="container">
-    <div class="video-container">
-      {/* <h2>Input Video</h2> */}
-      {error && <p>{error}</p>}
-      {stream && (
-        <div>
-          <video ref={videoRef} autoPlay playsInline muted />
-          <div class="button-container">
-            {recording ? (
-              <button onClick={stopRecording}>Stop Recording</button>
-            ) : (
-              <button onClick={startRecording}>Start Recording</button>
-            )}
-            <button onClick={generate} disabled={generationInProgress} class="generate-button">Generate</button>
-          </div>
+      <h1>ASL Translation</h1>
+      <div class="container">
+        <div class="video-container">
+          {/* <h2>Input Video</h2> */}
+          {error && <p>{error}</p>}
+          {stream && (
+            <div>
+              <video ref={videoRef} autoPlay playsInline muted />
+              <div class="button-container">
+                {recording ? (
+                  <button onClick={stopRecording}>Stop Recording</button>
+                ) : (
+                  <button onClick={startRecording}>Start Recording</button>
+                )}
+                <button onClick={generate} disabled={generationInProgress} class="generate-button">Generate</button>
+              </div>
+              {uploadSuccess && <p>Video uploaded successfully!</p>} {/* Display upload success message */}
+            </div>
+          )}
         </div>
-      )}
+        <div class="response-container">
+          <ResponseInterface generationInProgress={generationInProgress} generationData={generationData} />
+        </div>
+      </div>
     </div>
-    <div class="response-container">
-      <ResponseInterface generationInProgress={generationInProgress} generationData={generationData} />
-    </div>
-  </div>
-</div>
-
-
-  
-
   );
 };
 
